@@ -1,0 +1,67 @@
+<br>
+<center>
+# Homework 1
+*Alec Rospierski*
+</center
+<br><br><br>
+1. Calculate the following numerical results to three decimal places using R. [Note: Function "ln" means the natural log function]
+
+(a) $(7 - 8) + 5^3 - 5 / 6 + \sqrt{62}$
+(b) $\ln 3 + \sqrt 2 \sin(\pi) - e^3$
+(c) $\ln 5  - exp(2) + 2^3$
+
+```{r}
+# a
+a <- (7 - 8) + (5 ^ 3) - (5 / 6) + (sqrt(62))
+
+# b
+b <- log(3) + (sqrt(2)) * sin(pi) - exp(1)^3
+
+# c
+c <- log(5) - exp(2) + 2^3
+
+sprintf("a: %.3f", round(a, digits = 3))
+sprintf("b: %.3f", round(b, digits = 3))
+sprintf("c: %.3f", round(c, digits = 3))
+```
+
+
+2. Create a vector named countby5 that is a sequence of 5 to 100 in steps of 5.
+
+```{r}
+countby5 <- seq(5, 100, by = 5)
+print(countby5)
+```
+
+
+3. Provide the missing values in rep(seq(_, _, _), _) to create the sequence 20, 15, 15, 10, 10, 10, 5, 5, 5, 5.
+
+```{r}
+rep_seq <- rep(seq(20, 5, by = -5), 1:4)
+print(rep_seq)
+```
+
+4. Solve the following system of equations using R.
+\[
+  3x + 2y + 1z = 10 \\
+  2x - 3y + 1z = -1 \\
+  1x + 1y + 1z = 6
+\]
+
+```{r}
+m_a <- rbind(c(3, 2, 1), c(2, -3, 1), c(1, 1, 1))
+m_b <- c(10, -1, 6)
+solved <- solve(m_a, m_b)
+x <- solved[1]
+y <- solved[2]
+z <- solved[3]
+sprintf("x = %.0f :: y = %.0f :: z = %.0f", x, y, z)
+```
+
+
+5. Do some exploratory analysis on the winequality-red.csv data set using R. Find the range, mean, 
+standard deviation, distribution, etc., of the quantitative variables. Create 4 different plots to reveal 
+interesting relationships among different variables. Make the plots self-explanatory as possible, by using 
+appropriate title and axis labels and (if applicable) legends.  Write one or two sentences to explain what 
+information or hypothesis can be gleaned from each plot. You are recommended to conduct and 
+document the analysis using R Markdown. 
