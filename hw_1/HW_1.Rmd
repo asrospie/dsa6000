@@ -78,3 +78,32 @@ interesting relationships among different variables. Make the plots self-explana
 appropriate title and axis labels and (if applicable) legends.  Write one or two sentences to explain what 
 information or hypothesis can be gleaned from each plot. You are recommended to conduct and 
 document the analysis using R Markdown. 
+
+# Exploratory Data Analysis on Wine Quality Data Set
+
+## Loading and Inspecting the Data
+```{r}
+wine_df <- read.table(file = '../week_one_tut/winequality-red.csv', sep = ';', header = T)
+# change quality column to factor
+wine_df$quality <- as.factor(wine_df$quality)
+head(wine_df)
+```
+
+```{r}
+# table(wine_df$quality)
+# 
+# prop.table(table(wine_df$quality))
+# 
+# barplot(prop.table(table(wine_df$quality)))
+# 
+# pairs(quality ~ density + pH, data = wine_df)
+# 
+# boxplot(density ~ quality, data = wine_df)
+
+all_col <- colnames(wine_df)
+all_formula_strings <- paste0(all_col, ' ~ quality')
+col_names_length <- length(all_col)
+for (i in all_formula_strings[1:col_names_length - 1]) {
+  boxplot(as.formula(i), data = wine_df)
+}
+```
