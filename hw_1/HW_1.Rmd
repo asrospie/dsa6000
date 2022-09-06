@@ -1,9 +1,22 @@
+---
+title: "Homework 1"
+author: "Alec Rospierski"
+date: "September 7th, 2022"
+output: html_document
+---
+<style type="text/css">
+  h1.title {
+    margin-top: 5rem;
+    text-align: center;
+  }
+  h4.author {
+    text-align: center;
+  }
+  h4.date {
+    text-align: center;
+  }
+</style>
 <br>
-<center>
-# Homework 1
-*Alec Rospierski*
-</center
-<br><br><br>
 1. Calculate the following numerical results to three decimal places using R. [Note: Function "ln" means the natural log function]
 
 (a) $(7 - 8) + 5^3 - 5 / 6 + \sqrt{62}$
