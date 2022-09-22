@@ -88,7 +88,6 @@ wine_df <- read.table(file = '../week_one_tut/winequality-red.csv', sep = ';', h
 wine_df$quality <- as.factor(wine_df$quality)
 head(wine_df)
 ```
-
 ```{r}
 # table(wine_df$quality)
 # 
