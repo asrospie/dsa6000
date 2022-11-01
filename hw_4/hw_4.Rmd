@@ -1,0 +1,160 @@
+---
+title: "Homework 4"
+author: "Alec Rospierski"
+date: "Octoboer 21st, 2022"
+output:
+  pdf_document: default
+  html_document: default
+---
+<style type="text/css">
+  h1.title {
+    margin-top: 5rem;
+    text-align: center;
+  }
+  h4.author {
+    text-align: center;
+  }
+  h4.date {
+    text-align: center;
+  }
+</style>
+<br/>
+
+# Interpret Logistic Regression Coefficients
+
+E1. Build a logistic regression model to predict the probability that a student will be in the honors class, based on information we know about the student: male, math = 65, reading = 70. What is the probability?
+
+Probability of a male with a math score of 65 and reading score of 70 being in the honors class is 41.18%.
+
+
+E2. There are two students, A and B. A's math score is 10 points higher than B's. Build an appropriate model to answer: The odds of A getting in the honors class is _____ times the odds of B getting in the honors class. 
+
+Answer: C. 4.775
+
+
+E3. There are two students, Mary and John (note: gender is implied by name). 
+
+(a) If they have the same math score and we have no information about their reading and writing scores, who do you think has a higher chance of being in the honors class? 
+
+I think that Mary would have a higher chance to be an honor student. Looking at the table discussed earlier, it can be seen that in general, females have a higher chance of being in honors class. 
+
+(b) Suppose John's math score is 7 points higher than Mary's, which statement is right about their odds of being in the honors class?
+
+Answer: A. The odds of John is about 16% higher than the odds of Mary.
+
+# ISLR Section 4.7 Exercise 11
+
+In this problem, you will develop a model to predict whether a given car gets high or low gas mileage based on the Auto data set.
+```{r}
+library(ISLR)
+head(Auto)
+```
+(a) Create a binary variable, mpg01, that contains a 1 if mpg contains a value above its median, and a 0 if mpg contains a value below its median. You can compute the median using the median() function. Note you may find it helpful to use the data.frame() function to create a single data set containing both mpg01 and the other Auto variables.
+```{r}
+df <- Auto
+df$mpg01 <- ifelse(df$mpg > median(df$mpg), 1, 0)
+head(df)
+```
+
+(b) Explore the data graphically in order to investigate the association between mpg01 and the other features. Which of the other features seem most likely to be useful in predicting mpg01? Scatterplots and boxplots may be useful tools to answer this question. Describe your findings.
+
+```{r}
+boxplot(mpg ~ mpg01, data = df, xlab = 'mpg01', ylab = 'mpg', main = 'MPG')
+boxplot(cylinders ~ mpg01, data = df, xlab = 'mpg01', ylab = 'cylinders', main = 'Cylinders')
+boxplot(displacement ~ mpg01, data = df, xlab = 'mpg01', ylab = 'displacement', main = 'Displacement')
+boxplot(horsepower ~ mpg01, data = df, xlab = 'mpg01', ylab = 'horsepower', main = 'Horsepower')
+boxplot(weight ~ mpg01, data = df, xlab = 'mpg01', ylab = 'weight', main = 'Weight')
+boxplot(acceleration ~ mpg01, data = df, xlab = 'mpg01', ylab = 'acceleration', main = 'Acceleration')
+boxplot(origin ~ mpg01, data = df, xlab = 'mpg01', ylab = 'origin', main = 'Origin')
+boxplot(year ~ mpg01, data = df, xlab = 'mpg01', ylab = 'year', main = 'Year')
+```
+
+After reviewing these plots, I chose to use the following columns:
+- MPG
+- Cylinders
+- displacement
+- horsepower
+- weight
+- origin
+- year
+These were all chosen because there was a significant distribution difference between those with a mpg01 of 0 and 1.
+
+(c) Split the data into a training set and a test set.
+```{r}
+smp_size <- floor(.75 * nrow(df))
+
+set.seed(0)
+train_idx <- sample(seq_len(nrow(df)), size = smp_size)
+
+train <- df[train_idx, ]
+test <- df[-train_idx, ]
+print(nrow(df))
+print(nrow(train))
+print(nrow(test))
+```
+
+(d) Perform LDA on the training data in order to predict mpg01 using the variables that seemed most associated with mpg01 in (b). What is the test error of the model obtained.
+
+```{r}
+library(MASS)
+lda_md <- lda(mpg01 ~ mpg + displacement + horsepower + weight + origin + year, data = train)
+summary(lda_md)
+test_preds_lda <- predict(lda_md, newdata = test)
+lda_test_acc <- sum(test_preds_lda$class == test$mpg01) / nrow(test)
+sprintf('Test Accuracy: %f', lda_test_acc)
+table(test_preds_lda$class, test$mpg01)
+```
+Test Accuracy of LDA Model = 96.94%
+
+(e) Perform QDA on the training data in order to predict mpg01 using the variables that seemed most associated with mpg01 in (b). What is the test error of the model obtained.
+
+```{r}
+qda_md <- qda(mpg01 ~ mpg + displacement + horsepower + weight + origin + year, data = train)
+summary(qda_md)
+test_preds_qda <- predict(qda_md, newdata = test)
+qda_test_acc <- sum(test_preds_qda$class == test$mpg01) / nrow(test)
+sprintf('Test Accuracy: %f', qda_test_acc)
+table(test_preds_qda$class, test$mpg01)
+```
+Test Accuracy of QDA Model = 91.84%
+
+(f) Perform logistic regression on the training data in order to predict mpg01 using the variables that seemed most associated with mpg01 in (b). What is the test error of the model obtained.
+
+```{r}
+log_md <- glm(mpg01 ~ mpg + displacement + horsepower + weight + origin + year, data = train, family = binomial)
+summary(log_md)
+test_preds_log <- predict(log_md, newdata = test, type = 'response')
+test_preds_log <- ifelse(test_preds_log > 0.5, 1, 0)
+log_test_acc <- sum(test_preds_log == test$mpg01) / nrow(test)
+sprintf('Test Accuracy: %f', log_test_acc)
+table(test_preds_log, test$mpg01)
+```
+Test Accuracy for Logistic Regression Model = 98.98%
+
+(g) Perform KNN on the training data, with several values of K, in order to predict mpg01. Use only the variables that seemed most associated with mpg01 in (b). What test errors do you obtain? Which value of K seems to perform the best on this data set?
+
+```{r}
+library(class)
+train_knn <- train
+train_knn$name <- NULL 
+train_knn$acceleration <- NULL 
+test_knn <- test
+test_knn$name <- NULL 
+test_knn$acceleration <- NULL 
+
+best_model_k <- 0
+high_acc <- 0
+for (i in seq(1, 12, 2)) {
+  knn_md <- knn(train_knn, test_knn, train_knn$mpg01, k = i)
+  print(paste('KNN Model K =', i))
+  cm <- table(test_knn$mpg01, knn_md)
+  print(cm)
+  test_knn_error <- mean(knn_md != test_knn$mpg01)
+  if (1 - test_knn_error > high_acc) {
+    best_model_k <- i
+    high_acc <- 1 - test_knn_error
+  }
+  print(paste('Test Accuracy =', 1 - test_knn_error))
+}
+print(paste('Best K for KNN = ', best_model_k, 'with Test Accuracy of', round(high_acc, digits = 4) * 100))
+```
